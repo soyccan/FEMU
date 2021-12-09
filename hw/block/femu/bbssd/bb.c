@@ -17,6 +17,22 @@ static void bb_init(FemuCtrl *n, Error **errp)
 
     bb_init_ctrl_str(n);
 
+    // timing model
+    init_nand_flash(n);
+    set_latency(n);
+    for (int i = 0; i < FEMU_MAX_NUM_CHNLS; i++) {
+        n->chnl_next_avail_time[i] = 0;
+
+        /* FIXME: Can we use PTHREAD_PROCESS_PRIVATE here? */
+        pthread_spin_init(&n->chnl_locks[i], PTHREAD_PROCESS_SHARED);
+    }
+    for (int i = 0; i < FEMU_MAX_NUM_CHIPS; i++) {
+        n->chip_next_avail_time[i] = 0;
+
+        /* FIXME: Can we use PTHREAD_PROCESS_PRIVATE here? */
+        pthread_spin_init(&n->chip_locks[i], PTHREAD_PROCESS_SHARED);
+    }
+
     ssd->dataplane_started_ptr = &n->dataplane_started;
     ssd->ssdname = (char *)n->devname;
     femu_debug("Starting FEMU in Blackbox-SSD mode ...\n");

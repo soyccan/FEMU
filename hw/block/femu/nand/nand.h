@@ -100,7 +100,7 @@ typedef struct NandFlashTiming {
     int64_t chnl_pg_xfer_lat[MAX_FLASH_TYPE];
 } NandFlashTiming;
 
-static struct NandFlashTiming nand_flash_timing;
+extern struct NandFlashTiming nand_flash_timing;
 
 struct NandFlash {
     uint8_t flash_type;

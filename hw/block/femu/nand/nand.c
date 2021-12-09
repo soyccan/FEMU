@@ -1,5 +1,7 @@
 #include "../nvme.h"
 
+struct NandFlashTiming nand_flash_timing;
+
 /*
  * Lower/Upper page pairing in one block
  * Shadow page programming sequence to reduce cell-to-cell interference

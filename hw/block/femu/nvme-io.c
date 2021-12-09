@@ -343,6 +343,18 @@ uint16_t nvme_rw(FemuCtrl *n, NvmeNamespace *ns, NvmeCmd *cmd, NvmeRequest *req)
     req->nlb = nlb;
 
     ret = backend_rw(n->mbe, &req->qsg, &data_offset, req->is_write);
+
+    /* Timing Model */
+    // TODO: how to get correct page_type and lunid?
+    int lunid = 0;
+    int64_t now = req->stime;
+    uint8_t opcode = cmd->opcode;
+    int page_type = MLC_UPPER_PAGE;
+    req->expire_time = advance_chip_timestamp(n, lunid, now, opcode, page_type);
+    femu_log("set expire_time=%ld now=%ld diff=%ld opcode=%hd\n",
+             req->expire_time, now,
+             (req->expire_time - now)/1000000000UL, opcode);
+
     if (!ret) {
         return NVME_SUCCESS;
     }
